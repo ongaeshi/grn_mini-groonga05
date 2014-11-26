@@ -186,19 +186,21 @@
           <script type="text/template">
             ## Hashの作成
             - 文字列で高速にアクセス出来る
-          </script>
-        </section>
 
-        <section data-markdown>
-          <script type="text/template">
-            ## 要素の追加、参照(Hash)
-          </script>
-        </section>
+            ```ruby
+            hash = GrnMini::Hash.new
 
-        <section data-markdown>
-          <script type="text/template">
-            ## 検索(Hash)
-            - 100万レコード位はへっちゃらです
+            # Add
+            hash["a"] = {text:"aaa", number:1}
+            hash["b"] = {text:"bbb", number:2}
+            hash["c"] = {text:"ccc", number:3}
+
+            # Read
+            hash["b"].text       #=> "bbb"
+
+            # Write
+            hash["b"].text = "BBB"
+            ```
           </script>
         </section>
 
