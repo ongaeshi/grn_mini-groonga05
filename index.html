@@ -214,13 +214,42 @@
           <script type="text/template">
             ## tmpdb
             - 実験的にデータベースを作ってプログラム終了時に削除する
+
+            ```ruby
+            GrnMini::tmpdb do
+              array = GrnMini::Array.new
+              array << {text: "aaa", number: 1}
+              array << {text: "bbb", number: 2}
+              array << {text: "ccc", number: 3}
+
+              # 色々と実験…
+            end
+            # Delete temporary database
+            ```
           </script>
         </section>
 
         <section data-markdown>
           <script type="text/template">
             ## 明示的にカラムを指定する
-            - setup_columns
+            - setup_columnsを使います
+
+            ```ruby
+            GrnMini::tmpdb do
+              array = GrnMini::Array.new
+
+              # ダミーデータを設定する
+              array.setup_columns(
+                filename: "",
+                int:      0,
+                float:    0.0,
+                time:     Time.new,
+                )
+
+              # カラム名やデータ種類が間違っていたらエラーに
+              array << {filename: "a.txt", int: 1, float: 1.5, time: Time.at(1999)}
+            end
+            ```
           </script>
         </section>
 
@@ -228,6 +257,74 @@
           <script type="text/template">
             ## 複数テーブルの連携
             - tableを渡し合う
+
+            ```ruby
+            users = GrnMini::Hash.new("Users")
+            articles = GrnMini::Hash.new("Articles")
+
+            articles.setup_columns(
+              author: users,         # テーブルを要素に指定する
+              text: ""
+              )
+
+            users.setup_columns(
+              name: "",
+              favorites: [articles]  # 配列で囲むとベクター型になる(他の型も可能)
+              )
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## 複数テーブルの連携(2)
+
+            ```ruby
+users["aaa"] = {name: "Mr.A"}
+users["bbb"] = {name: "Mr.B"}
+users["ccc"] = {name: "Mr.C"}
+
+articles["aaa:1"] = {author: users["aaa"], text: "111"}
+articles["aaa:2"] = {author: users["aaa"], text: "222"}
+articles["aaa:3"] = {author: users["aaa"], text: "333"}
+articles["bbb:1"] = {author: users["bbb"], text: "111"}
+articles["bbb:2"] = {author: users["bbb"], text: "222"}
+articles["ccc:1"] = {author: users["ccc"], text: "111"}
+
+users["aaa"].favorites = [articles["aaa:1"], articles["bbb:2"]]
+users["bbb"].favorites = [articles["aaa:2"]]
+users["ccc"].favorites = [articles["aaa:1"], articles["ccc:1"]]
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## 複数テーブルの連携(2)
+
+            ```ruby
+# Search record.favorites
+users.select { |record| record.favorites == "aaa:1" } #=> ["aaa", "ccc"]
+users.select { |record| record.favorites == "aaa:2" } #=> ["bbb"]
+
+# Search record.favorites.text
+users.select { |record| record.favorites.text =~ "111" } #=> ["aaa", "ccc"]
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## もっと知りたい
+
+            [https://github.com/ongaeshi/grn_mini](https://github.com/ongaeshi/grn_mini)
+
+            - 複雑な検索
+            - レコードの削除
+            - ソート
+            - グルーピング
+            - スニペット
+            - ページネーション
           </script>
         </section>
 
