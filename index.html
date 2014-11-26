@@ -45,7 +45,7 @@
         <section data-markdown>
           <script type="text/template">
             # grn_mini
-            ## Groongaのテーブル構築をRubyでもっと簡単に書ける
+            ## Groongaのテーブル構築をRubyでもっと簡単に
           </script>
         </section>
 
@@ -55,11 +55,18 @@
 
             - <a href="https://github.com/ongaeshi/grn_mini">https://github.com/ongaeshi/grn_mini</a>
             - Rroonga便利！超速い！
-            - RubyのArrayやHashと同じ位気軽に使いたい
-            - Rroongaのテーブル構築を簡単に
-            - 全文検索用のインデックスを貼る
-            - テーブル間の連携
-            - RubyのArrayやHash位簡単に扱いたい
+            - もっと気軽に使いたい
+              - 全文検索用のインデックス設定
+              - テーブル間の連携
+              - RubyのArrayやHashのように
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## 目標
+
+            ### 検索が超高速なRubyのArrayやHash
           </script>
         </section>
 
@@ -102,9 +109,9 @@
           <script type="text/template">
             ## GrnMini::Arrayの作成
             
-            - テーブル定義不要！
+            - テーブル定義不要
             - 1つ目を追加した時にデータ型を見てカラム種類を決定
-            - 文字列への全文検索用インデックスは自動で貼ります(重要)
+            - 大切: 文字列への全文検索用インデックスを自動で貼ります
 
             ```ruby
             array = GrnMini::Array.new
@@ -300,7 +307,7 @@ users["ccc"].favorites = [articles["aaa:1"], articles["ccc:1"]]
 
         <section data-markdown>
           <script type="text/template">
-            ## 複数テーブルの連携(2)
+            ## 複数テーブルの連携(3)
 
             ```ruby
 # Search record.favorites
