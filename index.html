@@ -104,6 +104,7 @@
             
             - テーブル定義不要！
             - 1つ目を追加した時にデータ型を見てカラム種類を決定
+            - 文字列への全文検索用インデックスは自動で貼ります(重要)
 
             ```ruby
             array = GrnMini::Array.new
@@ -131,21 +132,53 @@
         <section data-markdown>
           <script type="text/template">
             ## 要素の追加、参照
-            - インデックスは1からなので注意
+            - 注意: インデックスは1から
+
+            ```ruby
+            array[1].text   #=> "aaa"
+            array[2].number #=> "2"
+            array[2].attributes #=> {text: "bbb", number: 2}
+            ```
           </script>
         </section>
 
         <section data-markdown>
           <script type="text/template">
             ## 検索
-            - grn式を使って簡単、高速に検索
+            - Groongaの[クエリー構文](http://groonga.org/ja/docs/reference/grn_expr/query_syntax.html)を使って高速に検索
+
+            ```ruby
+            # textに"aa"を含むものを探す
+            results = array.select("text:@aa")
+
+            # 検索結果を表示
+            results.each do |record|
+              p record.attributes #=> {text: "aaa", number: 1}
+            end
+            ```
           </script>
         </section>
 
         <section data-markdown>
           <script type="text/template">
             ## 生のRroonga::Tableを得る
-            - .grn
+            - いざという時に
+
+            ```ruby
+            array.grn
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## テーブル名を指定する
+            - 未指定の時は"Array"という名前になっています
+
+            ```ruby
+            array = GrnMini::Array.new("Users")
+            array << {text: "aaa", number: 1}
+            ```
           </script>
         </section>
 
@@ -193,6 +226,18 @@
           <script type="text/template">
             ## 複数テーブルの連携
             - tableを渡し合う
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            # 実例
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Honyomiのテーブル構成
           </script>
         </section>
 
