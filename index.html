@@ -120,7 +120,7 @@ end
           <script type="text/template">
             ## もっと気軽に
 
-            - 最初のうちは細かいことは気にせずに使いたい
+            - 最初は気軽に使いたい
             - 慣れてきたら細かく設定する
             - RubyのArrayやHash位簡単に使いたい
           </script>
@@ -264,7 +264,7 @@ end
         <section data-markdown>
           <script type="text/template">
             # まとめ
-            ## 検索が高速なRubyのArrayやHashっぽく使いましょう
+            ## 検索に特化したArrayやHashとして使おう
           </script>
         </section>
 
@@ -296,8 +296,8 @@ end
         <section data-markdown>
           <script type="text/template">
             ## 明示的にカラムを指定する
-            - setup_columnsを使います
-            - テーブル1個なら基本不要ですが・・
+            - setup_columnsを使う
+            - テーブル1個なら基本不要
 
             ```ruby
             GrnMini::tmpdb do
@@ -431,7 +431,7 @@ articles.select("author.name:Mr.A text:@1")  #=> ["aaa:1"]
 
         <section data-markdown>
           <script type="text/template">
-            ## grn_miniを使ってもっと気軽に全文検索
+            ## grn_miniで気軽に全文検索
             - Twitterのタイムライン
             - GitHubのログ
             - などなど
