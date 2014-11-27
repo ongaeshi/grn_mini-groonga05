@@ -64,14 +64,6 @@
 
         <section data-markdown>
           <script type="text/template">
-            ## 目標
-
-            ### 検索が超高速なRubyのArrayやHash
-          </script>
-        </section>
-
-        <section data-markdown>
-          <script type="text/template">
             ## インストール
             - Rroongaが必要です
               - [File: install — rroonga - ラングバ](http://ranguba.org/rroonga/ja/file.install.html)
@@ -111,12 +103,12 @@
             
             - テーブル定義不要
             - 1つ目を追加した時にデータ型を見てカラム種類を決定
-            - 大切: 文字列への全文検索用インデックスを自動で貼ります
+            - 大切: 文字列への全文検索用インデックスを自動で貼る
 
             ```ruby
             array = GrnMini::Array.new
-            array.add(text: "aaa", number: 1)
-            array << {text: "bbb", number: 2} # <<も使える
+            array << {text: "aaa", number: 1} # add()も使えます
+            array << {text: "bbb", number: 2}
             array.size #=> 2
             ```
           </script>
@@ -124,21 +116,7 @@
 
         <section data-markdown>
           <script type="text/template">
-            ## Arrayのロード
-            - すでに存在している時はロード
-
-            ```ruby
-            require 'grn_mini'
-            GrnMini::create_or_open("test.db")
-            array = GrnMini::Array.new
-            array.size   #=> 2
-            ```
-          </script>
-        </section>
-
-        <section data-markdown>
-          <script type="text/template">
-            ## 要素の追加、参照
+            ## 要素の参照
             - 注意: インデックスは1から
 
             ```ruby
@@ -179,18 +157,6 @@
 
         <section data-markdown>
           <script type="text/template">
-            ## テーブル名を指定する
-            - 未指定の時は"Array"という名前になっています
-
-            ```ruby
-            array = GrnMini::Array.new("Users")
-            array << {text: "aaa", number: 1}
-            ```
-          </script>
-        </section>
-
-        <section data-markdown>
-          <script type="text/template">
             ## Hashの作成
             - 文字列で高速にアクセス出来る
 
@@ -208,6 +174,13 @@
             # Write
             hash["b"].text = "BBB"
             ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            # まとめ
+            ## 検索が高速なRubyのArrayやHashとして使える
           </script>
         </section>
 
@@ -240,6 +213,7 @@
           <script type="text/template">
             ## 明示的にカラムを指定する
             - setup_columnsを使います
+            - テーブル1個なら基本不要ですが・・
 
             ```ruby
             GrnMini::tmpdb do
@@ -253,7 +227,7 @@
                 time:     Time.new,
                 )
 
-              # カラム名やデータ種類が間違っていたらエラーに
+              # データの追加
               array << {filename: "a.txt", int: 1, float: 1.5, time: Time.at(1999)}
             end
             ```
@@ -268,11 +242,9 @@
             ```ruby
 users = GrnMini::Hash.new("Users")
 articles = GrnMini::Hash.new("Articles")
-favorites = GrnMini::Hash.new("Favorites")
 
 users.setup_columns(name: "")
 articles.setup_columns(author: users, text: "")
-favorites.setup_columns(user: users, article: articles)
             ```
           </script>
         </section>
@@ -284,21 +256,10 @@ favorites.setup_columns(user: users, article: articles)
             ```ruby
 users["aaa"] = {name: "Mr.A"}
 users["bbb"] = {name: "Mr.B"}
-users["ccc"] = {name: "Mr.C"}
 
-articles["aaa:1"] = {author: "aaa", text: "111"}
-articles["aaa:2"] = {author: "aaa", text: "222"}
-articles["aaa:3"] = {author: "aaa", text: "333"}
-articles["bbb:1"] = {author: "bbb", text: "111"}
-articles["bbb:2"] = {author: "bbb", text: "222"}
-articles["ccc:1"] = {author: "ccc", text: "111"}
-
-favorites["aaa@1"] = {user: "aaa", article: "aaa:1"}
-favorites["aaa@2"] = {user: "aaa", article: "bbb:1"}
-favorites["bbb@1"] = {user: "bbb", article: "aaa:2"}
-favorites["ccc@1"] = {user: "ccc", article: "aaa:3"}
-favorites["ccc@2"] = {user: "ccc", article: "bbb:2"}
-favorites["ccc@3"] = {user: "ccc", article: "ccc:1"}
+articles["aaa:1"] = {author: users["aaa"], text: "111"}
+articles["aaa:2"] = {author: users["aaa"], text: "222"}
+articles["bbb:1"] = {author: users["bbb"], text: "111"}
             ```
           </script>
         </section>
@@ -308,17 +269,8 @@ favorites["ccc@3"] = {user: "ccc", article: "ccc:1"}
             ## 複数テーブルの連携(3)
 
             ```ruby
-# Mr.Bの書いた記事
-p articles.select("author:bbb").map do |record|
-  record._key
-end
-#=> ["bbb:1", "bbb:2"]
-
-# Mr.Cのお気に入りの中から本文に'1'を含む記事を探す
-p favorites.select("user.name:Mr.C article.text:@1").map do |record|
-  record.article._key
-end
-#=> ["ccc:1"]
+# 著者がMr.Aで本文に'1'を含む記事
+articles.select("author.name:Mr.A text:@1")  #=> ["aaa:1"]
             ```
           </script>
         </section>
@@ -335,7 +287,6 @@ end
             - グルーピング
             - スニペット
             - ページネーション
-            - 実際に動くサンプルコード付き
           </script>
         </section>
 
