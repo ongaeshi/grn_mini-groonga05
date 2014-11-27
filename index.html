@@ -266,18 +266,13 @@
             - tableを渡し合う
 
             ```ruby
-            users = GrnMini::Hash.new("Users")
-            articles = GrnMini::Hash.new("Articles")
+users = GrnMini::Hash.new("Users")
+articles = GrnMini::Hash.new("Articles")
+favorites = GrnMini::Hash.new("Favorites")
 
-            articles.setup_columns(
-              author: users,         # テーブルを要素に指定する
-              text: ""
-              )
-
-            users.setup_columns(
-              name: "",
-              favorites: [articles]  # 配列で囲むとベクター型になる(他の型も可能)
-              )
+users.setup_columns(name: "")
+articles.setup_columns(author: users, text: "")
+favorites.setup_columns(user: users, article: articles)
             ```
           </script>
         </section>
@@ -291,16 +286,19 @@ users["aaa"] = {name: "Mr.A"}
 users["bbb"] = {name: "Mr.B"}
 users["ccc"] = {name: "Mr.C"}
 
-articles["aaa:1"] = {author: users["aaa"], text: "111"}
-articles["aaa:2"] = {author: users["aaa"], text: "222"}
-articles["aaa:3"] = {author: users["aaa"], text: "333"}
-articles["bbb:1"] = {author: users["bbb"], text: "111"}
-articles["bbb:2"] = {author: users["bbb"], text: "222"}
-articles["ccc:1"] = {author: users["ccc"], text: "111"}
+articles["aaa:1"] = {author: "aaa", text: "111"}
+articles["aaa:2"] = {author: "aaa", text: "222"}
+articles["aaa:3"] = {author: "aaa", text: "333"}
+articles["bbb:1"] = {author: "bbb", text: "111"}
+articles["bbb:2"] = {author: "bbb", text: "222"}
+articles["ccc:1"] = {author: "ccc", text: "111"}
 
-users["aaa"].favorites = [articles["aaa:1"], articles["bbb:2"]]
-users["bbb"].favorites = [articles["aaa:2"]]
-users["ccc"].favorites = [articles["aaa:1"], articles["ccc:1"]]
+favorites["aaa@1"] = {user: "aaa", article: "aaa:1"}
+favorites["aaa@2"] = {user: "aaa", article: "bbb:1"}
+favorites["bbb@1"] = {user: "bbb", article: "aaa:2"}
+favorites["ccc@1"] = {user: "ccc", article: "aaa:3"}
+favorites["ccc@2"] = {user: "ccc", article: "bbb:2"}
+favorites["ccc@3"] = {user: "ccc", article: "ccc:1"}
             ```
           </script>
         </section>
@@ -310,12 +308,17 @@ users["ccc"].favorites = [articles["aaa:1"], articles["ccc:1"]]
             ## 複数テーブルの連携(3)
 
             ```ruby
-# Search record.favorites
-users.select { |record| record.favorites == "aaa:1" } #=> ["aaa", "ccc"]
-users.select { |record| record.favorites == "aaa:2" } #=> ["bbb"]
+# Mr.Bの書いた記事
+p articles.select("author:bbb").map do |record|
+  record._key
+end
+#=> ["bbb:1", "bbb:2"]
 
-# Search record.favorites.text
-users.select { |record| record.favorites.text =~ "111" } #=> ["aaa", "ccc"]
+# Mr.Cのお気に入りの中から本文に'1'を含む記事を探す
+p favorites.select("user.name:Mr.C article.text:@1").map do |record|
+  record.article._key
+end
+#=> ["ccc:1"]
             ```
           </script>
         </section>
@@ -332,6 +335,7 @@ users.select { |record| record.favorites.text =~ "111" } #=> ["aaa", "ccc"]
             - グルーピング
             - スニペット
             - ページネーション
+            - 実際に動くサンプルコード付き
           </script>
         </section>
 
@@ -344,6 +348,36 @@ users.select { |record| record.favorites.text =~ "111" } #=> ["aaa", "ccc"]
         <section data-markdown>
           <script type="text/template">
             ## Honyomiのテーブル構成
+
+            - [honyomi/lib/honyomi/database.rb](https://github.com/ongaeshi/honyomi/blob/master/lib/honyomi/database.rb)
+
+            ```ruby
+@books = GrnMini::Array.new("Books")
+@pages = GrnMini::Hash.new("Pages")
+@bookmarks = GrnMini::Hash.new("Bookmarks")
+
+@books.setup_columns(
+  path:     "",
+  title:    "",
+  author:   "",
+  url:      "",
+  page_num: 0,
+  timestamp: Time.new,
+  )
+
+@pages.setup_columns(
+  book:    @books,
+  text:    "",
+  page_no: 0,
+  bookmark: @bookmarks,
+  )
+
+@bookmarks.setup_columns(
+  page:    @pages,
+  comment: "",
+  timestamp: Time.new,
+  )
+            ```
           </script>
         </section>
 
