@@ -51,14 +51,88 @@
 
         <section data-markdown>
           <script type="text/template">
-            ## これは何？
+            ## 自己紹介
+
+            ![logo](http://www.gravatar.com/avatar/6377451175704e2d367ce508bffc1fa5)
+            おんがえし ([http://ongaeshi.me/](http://ongaeshi.me/))
+
+            - Groonga(Rroonga)を使って色々作っています
+            - Milkode
+              - ソースコード検索エンジン
+            - Honyomi
+              - 電子書籍検索エンジン
+
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## 色々と作った結果として・・
+
+            - Rroonga便利！超速い！
+              - 100万レコード位追加しても高速に検索出来る
+              - 他のストレージエンジンのインストールが不要
+            - 反面
+              - 大変な所も分かってきた
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Rroongaの大変な所 - カラム設定
+
+            - Rubyのデータ型に対応するGroongaのカラム型を調べながら適切な型を指定する必要がある
+            - どれが正しいのか分かりにくい
+            - 他のテーブルやベクター型はどうやって渡す？
+
+            ```ruby
+schema.create_table("Documents", :type => :hash) do |table|          
+  table.string("path")
+  table.string("package")
+  table.time("timestamp")
+  table.string("suffix")
+end
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## Rroongaの大変な所 - インデックス設定
+
+            - 全文検索を行うには別途語彙テーブルを作成する必要がある
+            - テーブル種類や正規化指定、トークナイザーなど複雑
+
+            ```ruby
+schema.create_table("Terms",
+                    :type => :patricia_trie,
+                    :key_normalize => true,
+                    :default_tokenizer => "TokenBigramSplitSymbolAlphaDigit") do |table|
+  table.index("documents.path", :with_position => true)
+  table.index("documents.package", :with_position => true)
+  table.index("documents.suffix", :with_position => true)
+end
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## もっと気軽に
+
+            - 最初のうちは細かいことは気にせずに使いたい
+            - 慣れてきたら細かく設定する
+            - RubyのArrayやHash位簡単に使いたい
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## grn_miniを作ってみた
 
             - <a href="https://github.com/ongaeshi/grn_mini">https://github.com/ongaeshi/grn_mini</a>
-            - Rroonga便利！超速い！
-            - もっと気軽に使いたい
-              - 全文検索用のインデックス設定
-              - テーブル間の連携
-              - RubyのArrayやHashのように
+            - Rroongaにテーブル構築を自動化する薄いラッパーを被せたもの
+            - 生のRroongaオブジェクトも簡単に取得出来るので安心
           </script>
         </section>
 
@@ -102,11 +176,21 @@
             ## GrnMini::Arrayの作成
             
             - テーブル定義不要
-            - 1つ目を追加した時にデータ型を見てカラム種類を決定
-            - 大切: 文字列への全文検索用インデックスを自動で貼る
 
             ```ruby
             array = GrnMini::Array.new
+            ```
+          </script>
+        </section>
+
+        <section data-markdown>
+          <script type="text/template">
+            ## 要素の追加
+            
+            - 1つ目を追加した時にデータ型を見てカラム種類を決定
+            - 文字列への全文検索用インデックスを自動で貼る
+
+            ```ruby
             array << {text: "aaa", number: 1} # add()も使えます
             array << {text: "bbb", number: 2}
             array.size #=> 2
@@ -146,11 +230,11 @@
 
         <section data-markdown>
           <script type="text/template">
-            ## 生のRroonga::Tableを得る
+            ## 生のRroongaオブジェクトを得る
             - いざという時に
 
             ```ruby
-            array.grn
+            array.grn  #=> Groonga::Array
             ```
           </script>
         </section>
@@ -180,7 +264,7 @@
         <section data-markdown>
           <script type="text/template">
             # まとめ
-            ## 検索が高速なRubyのArrayやHashとして使える
+            ## 検索が高速なRubyのArrayやHashっぽく使いましょう
           </script>
         </section>
 
@@ -347,20 +431,11 @@ articles.select("author.name:Mr.A text:@1")  #=> ["aaa:1"]
 
         <section data-markdown>
           <script type="text/template">
-            ## Rubyで取得出来るもの
-            - Twitter
-            - GitHub
-            - ...
-            - Rubyにはすでに豊富なライブラリがある
-          </script>
-        </section>
-
-        <section data-markdown>
-          <script type="text/template">
             ## grn_miniを使ってもっと気軽に全文検索
             - Twitterのタイムライン
             - GitHubのログ
             - などなど
+            - Rubyにはすでに豊富なライブラリがある
           </script>
         </section>
 
