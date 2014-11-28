@@ -264,7 +264,9 @@ end
         <section data-markdown>
           <script type="text/template">
             # まとめ
-            ## 検索に特化したArrayやHashとして使おう
+            - GrnMiniを使うとGroongaのArrayやHashをRuby標準と同じ感覚で使える
+            - GroongaのArrayやHashは検索速度がとても速い
+            - 追加したデータはデータベースファイルに永続化される
           </script>
         </section>
 
@@ -371,48 +373,6 @@ articles.select("author.name:Mr.A text:@1")  #=> ["aaa:1"]
             - グルーピング
             - スニペット
             - ページネーション
-          </script>
-        </section>
-
-        <section data-markdown>
-          <script type="text/template">
-            # 実例
-          </script>
-        </section>
-
-        <section data-markdown>
-          <script type="text/template">
-            ## Honyomiのテーブル構成
-
-            - [honyomi/lib/honyomi/database.rb](https://github.com/ongaeshi/honyomi/blob/master/lib/honyomi/database.rb)
-
-            ```ruby
-@books = GrnMini::Array.new("Books")
-@pages = GrnMini::Hash.new("Pages")
-@bookmarks = GrnMini::Hash.new("Bookmarks")
-
-@books.setup_columns(
-  path:     "",
-  title:    "",
-  author:   "",
-  url:      "",
-  page_num: 0,
-  timestamp: Time.new,
-  )
-
-@pages.setup_columns(
-  book:    @books,
-  text:    "",
-  page_no: 0,
-  bookmark: @bookmarks,
-  )
-
-@bookmarks.setup_columns(
-  page:    @pages,
-  comment: "",
-  timestamp: Time.new,
-  )
-            ```
           </script>
         </section>
 
